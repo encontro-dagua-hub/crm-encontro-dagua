@@ -434,21 +434,29 @@ const AIAssistant: React.FC<AIAssistantProps> = ({
                 </div>
               )}
 
-              {msg.content && (
-                <div
-                  className={msg.attachments?.length ? 'mt-2 pt-2 border-t border-white/10' : ''}
-                >
-                  {msg.content.split(/(\*\*.*?\*\*)/).map((part, i) =>
-                    part.startsWith('**') && part.endsWith('**') ? (
-                      <strong key={i} className="font-semibold">
-                        {part.slice(2, -2)}
-                      </strong>
-                    ) : (
-                      part
-                    )
-                  )}
+              {/* CORREÇÃO DO CHAT MUDO */}
+              <div className={msg.attachments?.length ? 'mt-2 pt-2 border-t border-white/10' : ''}>
+                <div className="whitespace-pre-wrap break-words">
+                  {(() => {
+                    // Tenta pegar o texto de qualquer lugar (text, content, message)
+                    const text = msg.content || msg.text || msg.message || '';
+                    
+                    // Se não tiver texto, não mostra nada (ou mostra reticências)
+                    if (!text) return null;
+              
+                    // Mantém a formatação de negrito (**texto**)
+                    return text.split(/(\*\*.*?\*\*)/).map((part: string, i: number) =>
+                      part.startsWith('**') && part.endsWith('**') ? (
+                        <strong key={i} className="font-semibold">
+                          {part.slice(2, -2)}
+                        </strong>
+                      ) : (
+                        part
+                      )
+                    );
+                  })()}
                 </div>
-              )}
+              </div>
             </div>
             <span className="text-[10px] text-slate-400 mt-1.5 px-1 opacity-60">
               {msg.role === 'user' ? 'Você' : mode === 'board' ? activeAgentName : 'Flow AI'}
